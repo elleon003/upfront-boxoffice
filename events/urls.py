@@ -10,4 +10,5 @@ urlpatterns = [
         views.event_detail,
         name='event_detail'
     ),
+    path('<int:event_id>/share/', views.event_share, name='event_share'),
 ]

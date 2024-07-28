@@ -6,4 +6,9 @@
     {{ event.event_date }} Presented by {{ event.presenter }}
   </p>
   {{ event.description|linebreaks }}
+  <p>
+    <a href="{% url "events:event_share" event.id %}">
+      Share this event
+    </a>
+  </p>
 {% endblock %}

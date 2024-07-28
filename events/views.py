@@ -1,6 +1,8 @@
+from django.core.mail import send_mail
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.views.generic import ListView
 from django.shortcuts import render, get_object_or_404
+from .forms import EmailEventForm
 from .models import Event
 
 class EventListView(ListView):
@@ -8,8 +10,6 @@ class EventListView(ListView):
     context_object_name = 'events'
     paginate_by = 3
     template_name = 'events/event/list.html'
-
-
 
 # def event_list(request):
 #     event_list = Event.published.all()
@@ -42,4 +42,48 @@ def event_detail(request, year, month, day, event):
         request,
         'events/event/detail.html',
         {'event': event}
+    )
+
+
+# Allows users to share events via email
+def event_share(request, event_id):
+    event = get_object_or_404(
+        Event,
+        id=event_id,
+        status=Event.Status.PUBLISHED
+    )
+    sent = False
+    if request.method == 'POST':
+        # Form was submitted
+        form = EmailEventForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data 
+            event_url = request.build_absolute_uri(
+                event.get_absolute_url()
+            )
+            subject = (
+                f"{cd['name']} ({cd['email']}) "
+                f"recommends you check out {event.title}"
+            )
+            message = (
+                f"View {event.title} at {event_url}\n\n"
+                f"{cd['name']}\'s comments: {cd['comments']}"
+            )
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=None,
+                recipient_list=[cd['to']]
+            )
+            sent = True
+    else:
+        form = EmailEventForm()
+    return render(
+        request,
+        'events/event/share.html',
+        {
+            'event': event,
+            'form': form,
+            'sent': sent
+        }
     )
