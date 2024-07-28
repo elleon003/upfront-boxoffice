@@ -4,7 +4,7 @@
   <h1>Up Front Events</h1>
   {% for event in events %}
     <h2>
-      <a href="{% url 'events:event_detail' event.id %}">
+      <a href="{{ event.get_absolute_url }}">
         {{ event.title }}
       </a>
     </h2>
@@ -13,4 +13,5 @@
     </p>
     {{ event.description|truncatewords:30|linebreaks }}
   {% endfor %}
+  {% include "pagination.html" with page=events %}
 {% endblock %}
