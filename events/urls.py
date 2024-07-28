@@ -3,7 +3,8 @@ from . import views
 
 app_name = 'events'
 urlpatterns = [
-    path('', views.event_list, name='event_list'),
+    # path('', views.event_list, name='event_list'),
+    path('', views.EventListView.as_view(), name='event_list'),
     path(
         '<slug:event>/<int:year>/<int:month>/<int:day>',
         views.event_detail,
