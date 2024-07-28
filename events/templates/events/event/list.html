@@ -1,0 +1,16 @@
+{% extends 'events/base.html' %}
+{% block title %}Up Front Events{% endblock %}
+{% block content %}
+  <h1>Up Front Events</h1>
+  {% for event in events %}
+    <h2>
+      <a href="{% url 'events:event_detail' event.id %}">
+        {{ event.title }}
+      </a>
+    </h2>
+    <p class="date">
+      {{ event.event_date }} - Presented by {{ event.presenter }}
+    </p>
+    {{ event.description|truncatewords:30|linebreaks }}
+  {% endfor %}
+{% endblock %}
