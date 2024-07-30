@@ -11,4 +11,12 @@
       Share this event
     </a>
   </p>
+  <h2>Similar Events</h2>
+  {% for event in similar_events %}
+    <p>
+      <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
+    </p>
+    {% empty %}
+      There are no similiar events yet.
+  {% endfor %}
 {% endblock %}
