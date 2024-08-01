@@ -11,5 +11,7 @@ urlpatterns = [
         name='event_detail'
     ),
     path('<int:event_id>/share/', views.event_share, name='event_share'),
-    path( 'tag/<slug:tag_slug>/', views.event_list, name='event_list_by_tag')
+    path( 'tag/<slug:tag_slug>/', views.event_list, name='event_list_by_tag'),
+    path('search/', views.event_search, name='event_search' )
+
 ]   

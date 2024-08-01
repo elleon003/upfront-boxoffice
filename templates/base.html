@@ -1,0 +1,43 @@
+{% load event_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %}</title>
+  <link href="{% static 'css/events.css' %}" rel="stylesheet">
+</head>
+<body>
+  <header>
+    {% block header %}
+      {% if request.user.is_authenticated %}
+        <ul class="menu">
+          <li {% if section == "dashboard" %}class="selected"{% endif %}>
+            <a href="{% url "dashboard" %}">My dashboard</a>
+          </li>
+        </ul>
+      {% endif %}
+      <span class="user">
+        {% if request.user.is_authenticated %}
+          Hello {{ request.user.first_name|default:request.user.username }},
+          <form action="{% url "logout" %}" method="post">
+            <button type="submit">Logout</button>
+            {% csrf_token %}
+          </form>
+        {% else %}
+          <a href="{% url "login" %}">Login</a>
+        {% endif %}
+      </span>
+    {% endblock %}
+  </header>
+  <main id="content">
+    {% block content %}
+    {% endblock %}
+  </main>
+  <footer>
+    {% block footer %}
+    {% endblock %}
+  </footer>
+</body>
+</html>

@@ -1,10 +1,15 @@
 from django.core.mail import send_mail
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.contrib.postgres.search import (
+    SearchVector,
+    SearchQuery,
+    SearchRank
+)
 from django.db.models import Count
 from django.views.generic import ListView
 from django.shortcuts import render, get_object_or_404
 from taggit.models import Tag
-from .forms import EmailEventForm
+from .forms import EmailEventForm, SearchForm
 from .models import Event
 
 # class EventListView(ListView):
@@ -105,5 +110,37 @@ def event_share(request, event_id):
             'event': event,
             'form': form,
             'sent': sent
+        }
+    )
+
+
+def event_search(request):
+    form = SearchForm()
+    query = None
+    results = []
+    if 'query' in request.GET:
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            search_vector = SearchVector(
+                'title', weight='A'
+            )
+            search_query = SearchQuery(query)
+            results = (
+                Event.published.annotate(
+                    search=search_vector,
+                    rank=SearchRank(search_vector, search_query)
+                ) + SearchVector('description', weight='B')
+                .filter(rank__gte=0.3
+                )
+                .order_by('-rank')
+            )
+    return render(
+        request,
+        'events/event/search.html',
+        {
+            'form': form,
+            'query': query,
+            'results': results
         }
     )
