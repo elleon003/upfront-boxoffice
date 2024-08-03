@@ -2,3 +2,4 @@ Django==5.0.7
 python-decouple==3.8
 django-anymail==11.0.1
 psycopg==3.1.18
+Pillow==10.3.0

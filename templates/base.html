@@ -31,6 +31,14 @@
       </span>
     {% endblock %}
   </header>
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li class="{{ message.tags }}">
+          {{ message|safe }}
+          <a href="#" class="close">x</a>
+        </li>
+    </ul>
   <main id="content">
     {% block content %}
     {% endblock %}
@@ -39,5 +47,6 @@
     {% block footer %}
     {% endblock %}
   </footer>
+  {% comment %} @TODO make the message close x accessible {% endcomment %}
 </body>
 </html>
