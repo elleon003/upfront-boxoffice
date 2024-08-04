@@ -38,7 +38,9 @@
           {{ message|safe }}
           <a href="#" class="close">x</a>
         </li>
+      {% endfor %}
     </ul>
+  {% endif %}
   <main id="content">
     {% block content %}
     {% endblock %}
