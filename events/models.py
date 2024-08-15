@@ -9,11 +9,31 @@ class PublishedManager(models.Manager):
         return (
             super().get_queryset().filter(status=Event.Status.PUBLISHED)
         )
+    
+class Category(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200, unique=True)
+
+    class Meta:
+        ordering = ['name']
+        indexes = [
+            models.Index(fields=['name']),
+        ]
+        verbose_name = 'category'
+        verbose_name_plural = 'categories'
+
+    def __str__(self):
+        return self.name
+    
 
 class Event(models.Model):
     class Status(models.TextChoices):
         DRAFT = 'DF', 'Draft'
         PUBLISHED = 'PB', 'Published'
+    class Timeline(models.TextChoices):
+        EVENING = 'EV', 'Evening'
+        MATINEE = 'MT', 'Matinee'
+        NO_SERVICE = 'NS', 'No Service'
     title = models.CharField(max_length=250)
     slug = models.SlugField(
         max_length=250,
@@ -24,21 +44,38 @@ class Event(models.Model):
         on_delete=models.SET_NULL,
         null=True
     )
+    marquee = models.ImageField(
+        upload_to="products/%Y/%m/%d",
+        blank=True
+    )
+    price = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     description = models.TextField()
     event_date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
-    publish = models.DateTimeField(default=timezone.now)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    available = models.BooleanField(default=True)
+    category = models.ForeignKey(
+        Category,
+        null=True,
+        related_name='products',
+        on_delete=models.CASCADE
+    )
     status = models.CharField(
         max_length=2,
         choices=Status,
         default=Status.DRAFT
     )
+    timeline = models.CharField(
+        max_length=3,
+        choices=Timeline,
+        default=Timeline.EVENING
+    )
+    # publish = models.DateTimeField(default=timezone.now)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     objects = models.Manager()
     published = PublishedManager()
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     class Meta:
         ordering = ['event_date']

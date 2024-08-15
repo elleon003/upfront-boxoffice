@@ -1,28 +1,35 @@
 {% extends 'base.html' %}
 {% block title %}Up Front Events{% endblock %}
 {% block content %}
-  <h1>Up Front Events</h1>
-
-  {% if tag %}
-    <h2>Events tagged with "{{ tag.name }}"</h2>
-  {% endif %}
-  {% for event in events %}
-    <h2>
-      <a href="{{ event.get_absolute_url }}">
-        {{ event.title }}
-      </a>
-    </h2>
-    <p class="tags">Tags: 
-      {% for tag in event.tags.all %}
-        <a href="{% url "events:event_list_by_tag" tag.slug %}">
-          {{ tag.name }}
-        </a>{% if not forloop.last %}, {% endif %}
-      {% endfor %}
-    </p>
-    <p class="date">
-      {{ event.event_date }} - Presented by {{ event.presenter }}
-    </p>
-    {{ event.description|truncatewords:30|linebreaks }}
-  {% endfor %}
-  {% include "pagination.html" with page=events %}
+  <div class="container">
+    <h1 class="text-2xl mb-8">Up Front Events</h1>
+    {% for event in events %}
+      <div class="mb-8 p-4 shadow-md">
+        <h2>
+          <a class="text-xl" href="{{ event.get_absolute_url }}">
+            {{ event.title }}
+          </a>
+        </h2>
+        {% if tags %}
+          <p class="tags">Tags: 
+            {% for tag in event.tags.all %}
+              <a href="{% url "events:event_list_by_tag" tag.slug %}">
+                {{ tag.name }}
+              </a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+          </p>
+        {% endif %}
+        <p class="date">
+          {{ event.event_date }} - Presented by {{ event.presenter }}
+        </p>
+        <p class="price text-l font-medium">${{ event.price  }}</p>
+      {{ event.description|truncatewords:30|linebreaks }}
+      <div class="btn mt-4">
+        <a href="{{ event.get_absolute_url }}">See Details</a>
+      </div>
+      
+      </div>
+    {% endfor %}
+    {% include "pagination.html" with page=events %}
+    </div>
 {% endblock %}
